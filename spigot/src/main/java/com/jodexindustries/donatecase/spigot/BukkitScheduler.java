@@ -1,15 +1,14 @@
 package com.jodexindustries.donatecase.spigot;
 
 import com.jodexindustries.donatecase.api.addon.Addon;
+import com.jodexindustries.donatecase.api.scheduler.Scheduler;
 import com.jodexindustries.donatecase.api.scheduler.SchedulerTask;
-import com.jodexindustries.donatecase.common.scheduler.BackendScheduler;
-import com.jodexindustries.donatecase.common.scheduler.WrappedTask;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.util.function.Consumer;
 
-public class BukkitScheduler extends BackendScheduler {
+public class BukkitScheduler implements Scheduler {
 
     private final Plugin plugin;
     private final org.bukkit.scheduler.BukkitScheduler scheduler;
@@ -19,8 +18,8 @@ public class BukkitScheduler extends BackendScheduler {
         this.scheduler = plugin.getServer().getScheduler();
     }
 
-    private WrappedTask wrapper(Addon addon, BukkitTask task) {
-        return new WrappedTask(addon, task.getTaskId(), task.isSync(), task, true);
+    private BukkitSchedulerTask wrapper(Addon addon, BukkitTask task) {
+        return new BukkitSchedulerTask(addon, task);
     }
 
     @Override
@@ -44,7 +43,7 @@ public class BukkitScheduler extends BackendScheduler {
     @Override
     public void run(Addon addon, Consumer<SchedulerTask> task) {
         scheduler.runTask(plugin, (bukkitTask) -> {
-            WrappedTask wrappedTask = wrapper(addon, bukkitTask);
+            BukkitSchedulerTask wrappedTask = wrapper(addon, bukkitTask);
             task.accept(wrappedTask);
         });
     }
@@ -52,7 +51,7 @@ public class BukkitScheduler extends BackendScheduler {
     @Override
     public void run(Addon addon, Consumer<SchedulerTask> task, long delay) {
         scheduler.runTaskLater(plugin, (bukkitTask) -> {
-            WrappedTask wrappedTask = wrapper(addon, bukkitTask);
+            BukkitSchedulerTask wrappedTask = wrapper(addon, bukkitTask);
             task.accept(wrappedTask);
         }, delay);
     }
@@ -60,15 +59,46 @@ public class BukkitScheduler extends BackendScheduler {
     @Override
     public void run(Addon addon, Consumer<SchedulerTask> task, long delay, long period) {
         scheduler.runTaskTimer(plugin, (bukkitTask) -> {
-            WrappedTask wrappedTask = wrapper(addon, bukkitTask);
+            BukkitSchedulerTask wrappedTask = wrapper(addon, bukkitTask);
             task.accept(wrappedTask);
         }, delay, period);
     }
 
     @Override
-    public void cancel(int taskId, boolean external) {
-        super.cancel(taskId, external);
+    public SchedulerTask async(Addon addon, Runnable task, long delay) {
+        BukkitTask bukkitTask = scheduler.runTaskLaterAsynchronously(plugin, task, delay);
+        return wrapper(addon, bukkitTask);
+    }
 
-        if (external) scheduler.cancelTask(taskId);
+    @Override
+    public SchedulerTask async(Addon addon, Runnable task, long delay, long period) {
+        BukkitTask bukkitTask = scheduler.runTaskTimerAsynchronously(plugin, task, delay, period);
+        return wrapper(addon, bukkitTask);
+    }
+
+    @Override
+    public void async(Addon addon, Consumer<SchedulerTask> task, long delay) {
+        scheduler.runTaskLaterAsynchronously(plugin, (bukkitTask) -> {
+            BukkitSchedulerTask wrappedTask = wrapper(addon, bukkitTask);
+            task.accept(wrappedTask);
+        }, delay);
+    }
+
+    @Override
+    public void async(Addon addon, Consumer<SchedulerTask> task, long delay, long period) {
+        scheduler.runTaskTimerAsynchronously(plugin, (bukkitTask) -> {
+            BukkitSchedulerTask wrappedTask = wrapper(addon, bukkitTask);
+            task.accept(wrappedTask);
+        }, delay, period);
+    }
+
+    @Override
+    public void cancel(int taskId) {
+        scheduler.cancelTask(taskId);
+    }
+
+    @Override
+    public void shutdown() {
+        scheduler.cancelTasks(plugin);
     }
 }

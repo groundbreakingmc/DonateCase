@@ -2,9 +2,7 @@ package com.jodexindustries.donatecase.api.scheduler;
 
 import com.jodexindustries.donatecase.api.addon.Addon;
 
-public interface SchedulerTask extends Runnable {
-
-    int getTaskId();
+public interface SchedulerTask {
 
     boolean isSync();
 
@@ -13,6 +11,4 @@ public interface SchedulerTask extends Runnable {
     Addon getOwner();
 
     void cancel();
-
 }
-
