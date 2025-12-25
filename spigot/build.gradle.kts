@@ -13,17 +13,17 @@ plugins {
 group = "com.jodexindustries.donatecase"
 
 dependencies {
-    compileOnly("me.clip:placeholderapi:2.11.6")
+    compileOnly("me.clip:placeholderapi:2.11.7")
     compileOnly("com.arcaniax:HeadDatabase-API:1.3.2")
     compileOnly("dev.lone:api-itemsadder:4.0.10")
     compileOnly("com.github.decentsoftware-eu:decentholograms:2.8.17")
     compileOnly("me.filoghost.holographicdisplays:holographicdisplays-api:3.0.0")
     compileOnly("de.oliver:FancyHolograms:2.4.0")
-    compileOnly("com.github.retrooper:packetevents-spigot:2.9.4")
+    compileOnly("com.github.retrooper:packetevents-spigot:2.11.1")
     compileOnly(fileTree("libs").include("*.jar"))
     implementation(project(":api:spigot-api"))
     implementation(project(":common"))
-    implementation("dev.rollczi:liteskullapi:2.0.0")
+    implementation("com.github.Jodexx:LiteSkullAPI:2.0.0")
 }
 
 tasks.runServer {

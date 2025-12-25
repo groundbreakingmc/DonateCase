@@ -26,16 +26,6 @@ tasks.withType<GenerateModuleMetadata> {
 }
 
 publishing {
-    repositories {
-        maven {
-            name = "Jodex"
-            url = uri("https://repo.jodex.xyz/releases")
-            credentials {
-                username = findProperty("jodexRepoUser") as String? ?: System.getenv("JODEX_REPO_USER")
-                password = findProperty("jodexRepoPassword") as String? ?: System.getenv("JODEX_REPO_PASSWORD")
-            }
-        }
-    }
     publications {
         create<MavenPublication>("maven") {
             groupId = "com.jodexindustries.donatecase"

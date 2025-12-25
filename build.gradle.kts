@@ -31,7 +31,8 @@ subprojects {
         maven("https://repo.alessiodp.com/releases/")
         maven("https://jitpack.io")
         maven("https://maven.devs.beer/") // ItemsAdder
-        maven("https://repo.jodex.xyz/releases/")
+        maven("https://repo.codemc.io/repository/maven-releases/") // packetevents
+        maven("https://repo.extendedclip.com/releases/") // placeholderapi
     }
 
     dependencies {
