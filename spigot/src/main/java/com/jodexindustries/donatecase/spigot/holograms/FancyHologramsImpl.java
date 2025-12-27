@@ -1,7 +1,7 @@
 package com.jodexindustries.donatecase.spigot.holograms;
 
 import com.jodexindustries.donatecase.api.data.casedefinition.CaseSettings;
-import com.jodexindustries.donatecase.api.data.hologram.HologramDriver;
+import com.jodexindustries.donatecase.api.data.hologram.AbstractHologramDriver;
 import com.jodexindustries.donatecase.api.data.storage.CaseLocation;
 import com.jodexindustries.donatecase.spigot.serializer.ConfigurationSectionImpl;
 import com.jodexindustries.donatecase.spigot.tools.BukkitUtils;
@@ -14,13 +14,11 @@ import org.bukkit.Location;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.configurate.ConfigurationNode;
 
-import java.util.HashMap;
 import java.util.UUID;
 
-public class FancyHologramsImpl implements HologramDriver {
+public class FancyHologramsImpl extends AbstractHologramDriver {
 
     private final HologramManager manager = FancyHologramsPlugin.get().getHologramManager();
-    private final HashMap<CaseLocation, Hologram> holograms = new HashMap<>();
 
     @Override
     public void forceCreate(@NotNull CaseLocation block, CaseSettings.@NotNull Hologram caseHologram) {
@@ -40,28 +38,12 @@ public class FancyHologramsImpl implements HologramDriver {
         if (tempLocation.getYaw() != 0) location.setYaw(tempLocation.getYaw());
         if (tempLocation.getPitch() != 0) location.setPitch(tempLocation.getPitch());
         hologramData.setLocation(location);
+        hologramData.setPersistent(false); // disable saving
 
         Hologram hologram = manager.create(hologramData);
 
-        this.holograms.put(block, hologram);
+        this.holograms.put(block, () -> manager.removeHologram(hologram));
         manager.addHologram(hologram);
-    }
-
-    @Override
-    public void remove(@NotNull CaseLocation block) {
-        Hologram hologram = this.holograms.get(block);
-        if(hologram == null) return;
-
-        this.holograms.remove(block);
-        manager.removeHologram(hologram);
-    }
-
-    @Override
-    public void remove() {
-        for (Hologram hologram : this.holograms.values()) {
-            manager.removeHologram(hologram);
-        }
-        this.holograms.clear();
     }
 
     private static @NotNull DisplayHologramData getData(HologramType type, String name, Location location) {

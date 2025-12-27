@@ -9,13 +9,20 @@ import java.util.Map;
 
 public interface HologramManager extends HologramDriver {
 
-    void register(@NotNull String name, @NotNull HologramDriver driver);
+    default void register(@NotNull String name, @NotNull HologramDriver driver) {
+        if (get().containsKey(name)) return;
 
-    void unregister(@NotNull String name);
+        get().put(name, driver);
+    }
 
+    @Deprecated
+    default void unregister(@NotNull String name) {
+        get().remove(name);
+    }
+
+    @Deprecated
     default void unregister() {
-        List<String> list = new ArrayList<>(get().keySet());
-        list.forEach(this::unregister);
+        get().clear();
     }
 
     Map<String, HologramDriver> get();

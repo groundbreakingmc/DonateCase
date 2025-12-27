@@ -28,18 +28,6 @@ public class HologramManagerImpl implements HologramManager {
     }
 
     @Override
-    public void register(@NotNull String name, @NotNull HologramDriver driver) {
-        if (drivers.containsKey(name)) return;
-
-        drivers.put(name, driver);
-    }
-
-    @Override
-    public void unregister(@NotNull String name) {
-        drivers.remove(name);
-    }
-
-    @Override
     public Map<String, HologramDriver> get() {
         return drivers;
     }

@@ -3,21 +3,18 @@ package com.jodexindustries.donatecase.spigot.holograms;
 import com.Zrips.CMI.CMI;
 import com.Zrips.CMI.Modules.Holograms.CMIHologram;
 import com.jodexindustries.donatecase.api.data.casedefinition.CaseSettings;
-import com.jodexindustries.donatecase.api.data.hologram.HologramDriver;
+import com.jodexindustries.donatecase.api.data.hologram.AbstractHologramDriver;
 import com.jodexindustries.donatecase.api.data.storage.CaseLocation;
 import com.jodexindustries.donatecase.spigot.tools.BukkitUtils;
 import net.Zrips.CMILib.Container.CMILocation;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.HashMap;
 import java.util.UUID;
 
 /**
  * Class for CMI Holograms implementation
  */
-public class CMIHologramsImpl implements HologramDriver {
-
-    private final HashMap<CaseLocation, CMIHologram> holograms = new HashMap<>();
+public class CMIHologramsImpl extends AbstractHologramDriver {
 
     @Override
     public void forceCreate(@NotNull CaseLocation block, CaseSettings.@NotNull Hologram caseHologram) {
@@ -35,23 +32,7 @@ public class CMIHologramsImpl implements HologramDriver {
 
         hologram.update();
 
-        this.holograms.put(block, hologram);
+        this.holograms.put(block, hologram::remove);
     }
 
-    @Override
-    public void remove(@NotNull CaseLocation block) {
-        if (!this.holograms.containsKey(block)) return;
-
-        CMIHologram hologram = this.holograms.get(block);
-
-        this.holograms.remove(block);
-
-        hologram.remove();
-    }
-
-    @Override
-    public void remove() {
-        this.holograms.values().forEach(CMIHologram::remove);
-        this.holograms.clear();
-    }
 }
